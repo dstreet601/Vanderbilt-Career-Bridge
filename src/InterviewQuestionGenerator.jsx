@@ -59,7 +59,7 @@ export default function InterviewQuestionGenerator() {
       if (!res.ok) throw new Error("API error");
       const data = await res.json();
       const raw = data?.content?.[0]?.text || data?.text || data?.completion || "";
-      const cleaned = raw.replace(/```json|```/g, "").trim();
+      const cleaned = raw.replace(/^```[\s\S]*?\n/, "").replace(/```$/, "").trim();
       setQuestions(JSON.parse(cleaned));
     } catch { setError("Something went wrong. Please try again."); }
     finally { setLoading(false); }
