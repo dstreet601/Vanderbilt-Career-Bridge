@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import mammoth from "mammoth";
+import InterviewQuestionGenerator from "./InterviewQuestionGenerator";
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 const GOLD = "#CFB53B";
@@ -804,6 +805,7 @@ export default function App() {
         )}
 
         {/* ══ SAVED TAB ══ */}
+        {activeTab === "interview" && <InterviewQuestionGenerator />}
         {activeTab === "saved" && (
           <div style={{ animation: "fadeUp .4s ease both" }}>
             <h2 style={{ fontSize: 22, fontWeight: 400, letterSpacing: "-.02em", marginBottom: 6 }}>Saved Matches</h2>
@@ -845,7 +847,8 @@ export default function App() {
                 </div>
               ))}
             </div>
-            {!resumeData && <div style={{ background: GOLD_DIM, border: `1px solid ${GOLD_BORDER}`, borderRadius: 12, padding: "16px 20px", marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}><div><div style={{ fontSize: 13, color: GOLD, fontWeight: 700, marginBottom: 3 }}>Upload your resume</div><div style={{ fontSize: 12, color: "#777" }}>Get personalized matches and tailored bullets.</div></div><button onClick={() => setActiveTab("resume")} style={{ padding: "8px 18px", background: GOLD, border: "none", borderRadius: 8, color: "#0a0a0a", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>Upload →</button></div>}
+            {!resumeData && <div style={{ background: GOLD_DIM, border: `1px solid ${GOLD_BORDER}`, borderRadius: 12, padding: "16px 20px", marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}><div><div style={{ fontSize: 13, color: GOLD, fontWeight: 700, marginBottom: 3 }}>Upload your resume</div><div style={{ fontSize: 12, color: "#777" }}>Get personalized matches and tailored bullets.</div></div><button onClick={() => setActiveTab("resume")} style={{ padding: "8px 18px", background: GOLD, border: "none", borderRadius: 8, color: "#0a0a0a", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>Upload →</button></div>} 
+            <button onClick={() => setActiveTab("interview")} style={{ padding: "10px 22px", background: "none", border: "none", color: "#444", cursor: "pointer" }}>Interview Prep</button>
           </div>
         )}
       </main>
