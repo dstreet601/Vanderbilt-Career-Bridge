@@ -451,6 +451,7 @@ export default function App() {
     { id: "matches", label: selectedOrg ? `Matches · ${selectedOrg.acronym}` : "Matches" },
     { id: "saved", label: `Saved${savedMatches.length ? ` (${savedMatches.length})` : ""}` },
     { id: "profile", label: user.name.split(" ")[0] },
+    { id: "interview", label: "Interview Prep" },
   ];
 
   return (
