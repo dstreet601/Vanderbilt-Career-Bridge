@@ -1,6 +1,10 @@
 import { useState, useRef, useCallback } from "react";
 import mammoth from "mammoth";
+import * as pdfjsLib from "pdfjs-dist";
+import pdfjsWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import InterviewQuestionGenerator from "./InterviewQuestionGenerator";
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 const GOLD = "#CFB53B";
@@ -238,6 +242,20 @@ function fileToArrayBuffer(file) {
   });
 }
 
+// Extract plain text from a PDF entirely client-side (no PDF support on the
+// backend model, so we never send raw PDF bytes to /api/claude).
+async function extractPdfText(file) {
+  const arrayBuffer = await fileToArrayBuffer(file);
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  let text = "";
+  for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+    const page = await pdf.getPage(pageNum);
+    const content = await page.getTextContent();
+    text += content.items.map(item => item.str).join(" ") + "\n";
+  }
+  return text.trim();
+}
+
 const categories = ["All", "Finance & Business", "Consulting", "Technology", "Engineering", "Healthcare", "Legal & Policy", "Leadership", "Cultural & Identity", "Service & Social Impact", "Entrepreneurship", "Arts & Media", "Academic & Research", "Environment", "Religious & Spiritual", "Health & Wellness", "International"];
 
 // ─── MAIN APP ─────────────────────────────────────────────────────────────────
@@ -343,18 +361,18 @@ export default function App() {
       let messages;
 
       if (isPDF) {
-        // Try sending PDF natively to Claude
+        // Extract text client-side with pdf.js — the backend model has no
+        // native PDF support, so we never send raw PDF bytes to /api/claude.
         try {
-          const b64 = await fileToBase64(file);
+          const text = await extractPdfText(file);
+          if (!text) throw new Error("Empty PDF");
           messages = [{
             role: "user",
-            content: [
-              { type: "document", source: { type: "base64", media_type: "application/pdf", data: b64 } },
-              { type: "text", text: "Extract structured information from this resume and return ONLY the JSON." }
-            ]
+            content: `${text.slice(0, 5000)}\n\n---\nExtract structured info from the resume text above and return ONLY the JSON.`
           }];
         } catch (pdfErr) {
-          throw new Error("Could not read PDF. Try saving as TXT and uploading again.");
+          console.warn("pdf.js extraction failed:", pdfErr);
+          throw new Error("Could not read PDF. Try saving as TXT or DOCX and uploading again.");
         }
       } else if (isDOCX) {
         // Use mammoth to extract text from DOCX
@@ -916,3 +934,4 @@ function Spinner({ label }) {
 function EmptyState({ icon, title, sub, action }) {
   return <div style={{ textAlign: "center", padding: "5rem 2rem" }}><div style={{ fontSize: 40, marginBottom: 14 }}>{icon}</div><h2 style={{ fontSize: 18, fontWeight: 400, color: "#666", margin: "0 0 6px" }}>{title}</h2><p style={{ color: "#333", marginBottom: 20, fontSize: 13 }}>{sub}</p>{action && <button onClick={action.onClick} style={{ padding: "9px 24px", background: GOLD, border: "none", borderRadius: 8, color: "#0a0a0a", fontWeight: 700, cursor: "pointer", fontSize: 13, fontFamily: "Georgia, serif" }}>{action.label}</button>}</div>;
 }
+
