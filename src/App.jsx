@@ -1,9 +1,10 @@
-﻿import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback } from "react";
 import mammoth from "mammoth";
 import * as pdfjsLib from "pdfjs-dist";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import InterviewQuestionGenerator from "./InterviewQuestionGenerator";
 import CoverLetterGenerator from "./CoverLetterGenerator";
+import EmailOutreachGenerator from "./EmailOutreachGenerator";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
@@ -472,6 +473,7 @@ export default function App() {
     { id: "profile", label: user.name.split(" ")[0] },
     { id: "interview", label: "Interview Prep" },
     { id: "coverletter", label: "Cover Letter" },
+    { id: "email", label: "Email Outreach" },
   ];
 
   return (
@@ -828,6 +830,7 @@ export default function App() {
         {/* ══ SAVED TAB ══ */}
         {activeTab === "interview" && <InterviewQuestionGenerator />}
         {activeTab === "coverletter" && <CoverLetterGenerator user={user} selectedOrg={selectedOrg} selectedEmployer={selectedEmployer} resumeData={resumeData} />}
+        {activeTab === "email" && <EmailOutreachGenerator user={user} selectedOrg={selectedOrg} selectedEmployer={selectedEmployer} resumeData={resumeData} />}
         {activeTab === "saved" && (
           <div style={{ animation: "fadeUp .4s ease both" }}>
             <h2 style={{ fontSize: 22, fontWeight: 400, letterSpacing: "-.02em", marginBottom: 6 }}>Saved Matches</h2>
