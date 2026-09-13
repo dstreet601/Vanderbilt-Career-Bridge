@@ -62,7 +62,7 @@ export default function EmailOutreachGenerator({ user, selectedOrg, selectedEmpl
       const res = await fetch("/api/claude", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ system: systemPrompt, messages: [{ role: "user", content: userPrompt }], max_tokens: 500 }),
+        body: JSON.stringify({ system: systemPrompt, messages: [{ role: "user", content: userPrompt }], max_tokens: 900 }),
       });
       if (!res.ok) throw new Error("API error");
       const data = await res.json();
