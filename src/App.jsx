@@ -5,6 +5,7 @@ import pdfjsWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import InterviewQuestionGenerator from "./InterviewQuestionGenerator";
 import CoverLetterGenerator from "./CoverLetterGenerator";
 import EmailOutreachGenerator from "./EmailOutreachGenerator";
+import SkillsGapAnalysis from "./SkillsGapAnalysis";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
@@ -474,6 +475,7 @@ export default function App() {
     { id: "interview", label: "Interview Prep" },
     { id: "coverletter", label: "Cover Letter" },
     { id: "email", label: "Email Outreach" },
+    { id: "skillsgap", label: "Skills Gap" },
   ];
 
   return (
@@ -831,6 +833,7 @@ export default function App() {
         {activeTab === "interview" && <InterviewQuestionGenerator />}
         {activeTab === "coverletter" && <CoverLetterGenerator user={user} selectedOrg={selectedOrg} selectedEmployer={selectedEmployer} resumeData={resumeData} />}
         {activeTab === "email" && <EmailOutreachGenerator user={user} selectedOrg={selectedOrg} selectedEmployer={selectedEmployer} resumeData={resumeData} />}
+        {activeTab === "skillsgap" && <SkillsGapAnalysis user={user} selectedOrg={selectedOrg} resumeData={resumeData} employers={EMPLOYERS} />}
         {activeTab === "saved" && (
           <div style={{ animation: "fadeUp .4s ease both" }}>
             <h2 style={{ fontSize: 22, fontWeight: 400, letterSpacing: "-.02em", marginBottom: 6 }}>Saved Matches</h2>
