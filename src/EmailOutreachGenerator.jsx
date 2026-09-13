@@ -52,11 +52,14 @@ export default function EmailOutreachGenerator({ user, selectedOrg, selectedEmpl
     const orgContext = orgHighlight.trim()
       ? `\nStudent org leadership to mention: ${orgHighlight}${selectedOrg?.mission ? ` — mission: "${selectedOrg.mission}"` : ""}${selectedOrg?.skills?.length ? `, skills developed: ${selectedOrg.skills.join(", ")}` : ""}.`
       : "";
-    const recipientContext = recipientInfo.trim() ? `\nRecipient: ${recipientInfo.trim()}.` : "\nNo specific recipient named — address it generically (e.g. \"Hi there\" or to the team).";
+    const senderName = user?.name || "[Your Name]";
+    const recipientLine = recipientInfo.trim()
+      ? `RECIPIENT (who this email is addressed to — greet them by name, but do NOT sign the email as them; they are not the sender): ${recipientInfo.trim()}, at ${companyName}.`
+      : `RECIPIENT (no specific person named — address it generically, e.g. "Hi there" or to the team): someone at ${companyName}.`;
     const connectionContext = connectionPoint.trim() ? `\nConnection point to reference: ${connectionPoint.trim()}.` : "";
 
-    const systemPrompt = "You are an expert career coach who writes short, effective networking and outreach emails for Vanderbilt University students. Emails should be genuine, specific, and respectful of the recipient's time — never generic or salesy. Return ONLY a valid JSON object with no markdown fences, no preamble, in this exact schema: {\"subject\":\"short subject line\",\"body\":\"full email body including greeting and sign-off\"}.";
-    const userPrompt = `Write a ${tone} ${purposeLabel.toLowerCase()} email from ${user?.name || "a Vanderbilt student"} (${user?.major || resumeData?.major || "N/A"}, Class of ${user?.gradYear || resumeData?.gradYear || "N/A"}) to someone at ${companyName}.${recipientContext}${connectionContext}${orgContext}${resumeContext}\n\nKeep the body under 150 words, make a clear and specific ask appropriate for a "${purposeLabel}" email, and sign off with "${user?.name || "[Your Name]"}". Return ONLY the JSON schema described.`;
+    const systemPrompt = "You are an expert career coach who writes short, effective networking and outreach emails for Vanderbilt University students. Emails should be genuine, specific, and respectful of the recipient's time — never generic or salesy. CRITICAL: every email is written FROM the student (the sender) TO the recipient. Always sign off using the SENDER's name. NEVER sign off using the recipient's name, even if the recipient's name appears elsewhere in the prompt. Return ONLY a valid JSON object with no markdown fences, no preamble, in this exact schema: {\"subject\":\"short subject line\",\"body\":\"full email body including greeting and sign-off\"}.";
+    const userPrompt = `SENDER (write this email as this person, and sign off with their name — this is who is sending the email, not who is receiving it): ${senderName}, ${user?.major || resumeData?.major || "N/A"}, Class of ${user?.gradYear || resumeData?.gradYear || "N/A"}.\n${recipientLine}${connectionContext}${orgContext}${resumeContext}\n\nWrite a ${tone} ${purposeLabel.toLowerCase()} email. Keep the body under 150 words and make a clear, specific ask appropriate for a "${purposeLabel}" email. End the email with a sign-off using the SENDER's name, "${senderName}" — do not, under any circumstances, sign off using the recipient's name. Return ONLY the JSON schema described.`;
 
     try {
       const res = await fetch("/api/claude", {
